@@ -145,6 +145,64 @@ const watchChapter = (cap) =>{
     
     $capList.innerHTML = '';
     $capList.appendChild(fragment);
+
+    // Inyectar controles fuera del contenedor de flex para no romper el layout
+    renderDynamicNav(cap);
+}
+
+const renderDynamicNav = (cap) => {
+    let dynamicNav = document.getElementById('dynamic-nav-container');
+    if (!dynamicNav) {
+        dynamicNav = document.createElement('div');
+        dynamicNav.id = 'dynamic-nav-container';
+        dynamicNav.className = 'flex justify-between mt-8 mb-4 border-t border-base-300 pt-4';
+        
+        const btnP = document.createElement('button');
+        btnP.id = 'dynamic-prev';
+        btnP.className = 'btn btn-outline btn-neutral'; // Neutral evita la colisión en document.querySelector('.btn-primary')
+        btnP.innerHTML = '&laquo; Anterior';
+        
+        const btnN = document.createElement('button');
+        btnN.id = 'dynamic-next';
+        btnN.className = 'btn btn-outline btn-neutral';
+        btnN.innerHTML = 'Siguiente &raquo;';
+        
+        dynamicNav.appendChild(btnP);
+        dynamicNav.appendChild(btnN);
+        
+        const $containerText = document.querySelector('.containerText');
+        $containerText.appendChild(dynamicNav);
+    }
+
+    const prev = document.getElementById('dynamic-prev');
+    const next = document.getElementById('dynamic-next');
+    
+    const newPrev = prev.cloneNode(true);
+    const newNext = next.cloneNode(true);
+    
+    newPrev.disabled = parseInt(cap) === 0;
+    newNext.disabled = parseInt(cap) >= currentBook.length - 1;
+    
+    newPrev.addEventListener('click', () => {
+        if (currentChapter > 0) {
+            currentChapter--;
+            bookCap.textContent = currentChapter + 1;
+            watchChapter(currentChapter);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    newNext.addEventListener('click', () => {
+        if (currentChapter < currentBook.length - 1) {
+            currentChapter++;
+            bookCap.textContent = currentChapter + 1;
+            watchChapter(currentChapter);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+    
+    dynamicNav.replaceChild(newPrev, prev);
+    dynamicNav.replaceChild(newNext, next);
 }
 
 const showBookCaps = (book) =>{
@@ -175,7 +233,9 @@ const listenClickCaps = (event,element) => {
 const readBooks = async (book)  =>{
      const bookForRead = await searchBook(book);
      currentBook = bookForRead;
-     showBookCaps(bookForRead)
+     showBookCaps(bookForRead);
+     const nav = document.getElementById('dynamic-nav-container');
+     if (nav) nav.remove();
 }
 
 agregateBooks();
