@@ -1,212 +1,74 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="synthwave">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Bible</title>
-    <style>
-        .appContainer{
-            display: flex;
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
         }
-
-       ul{
-            padding: 0;
-            list-style: none;
-       }
-
-       .appContainer,
-       .header{
-         max-width: 1260px;
-         margin-left: auto;
-         margin-right: auto;
-         overflow: hidden;
-       }
-
-       .caps__list{
-         display: flex;
-         gap: 16px;
-         flex-wrap: wrap;
-         width: 98%;
-       }
-
-       .caps__items{
-         width: 40px; 
-         height: 40px; 
-         border: 1px solid black;
-         display: grid;
-         place-content: center;
-         padding: 5px;
-         font-size: 20px;
-       }
-
-       #prevBtn,
-       #nextBtn{
-         border: 0;
-         width: 40px;
-         height: 40px;
-         box-shadow: 0 0 0 1px #d3d3d3d3;
-         border-radius: 50%;
-       }
-
-       .btn-bible{
-            /* background-color: red; */
-            width: 90%;
-            position: fixed;
-            top: 95%;
-            left: 50%;
-            /* bottom: 0%; */
-            transform: translate(-50%, -50%);
-            display: flex;
-            justify-content: space-between;
-       }
-
-       .list{
-        background-color: white;
-        margin: 0;
-        padding: 5px 0;
-        display: inline-block;
-        max-height: 100vh;
-        overflow-y: auto;
-       }
-
-       .list-hidden{
-        display: none;
-       }
-
-       .header{
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            margin-top: 15px;
-       }
-
-       .title{
-            margin: 0;
-            font-size: 1.5rem;
-            color: #628FA6;
-       }
-
-       .menu-btn{
-            border: 0;
-            background: none;
-       }
-
-       .overlay-active{
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: rgba(245, 245, 247, .9);;
-        z-index: 10;
-       }
-
-       .list li{
-            padding: 10px; 
-            border-bottom:1px solid #4444;
-       }
-
-       #currentCap{
-        margin-top: 20px;
-        overflow: auto;
-        width: 98vw;
-        display: flex;
-        gap: 10px;
-        position: sticky;
-        top: 0;
-        background-color: white;
-        border-bottom: 2px solid #D9E4DD;
-        padding-bottom: 3px;
-       }
-
-       #currentCap span {
-        white-space: nowrap;
-       }
-
-       #currentCap,
-       .list,
-       .title{
-        font-family: math
-       }
-       
-
-       #currentCap span{
-        padding: 10px;
-       }
-
-       .text,
-       .verse__text{
-        font-family: Arial, Helvetica, sans-serif;
-        line-height: 1.5;
-       }
-
-       .text,
-       .verse__text,
-       .itemsNav{
-        color: #333333;
-       }
-
-       .text{
-        margin: 0;
-       }
-
-
-       .bold{
-        font-weight: bold;
-        font-size: 17px;
-       }
-       
-       .select-cap{
-        font-weight: bold;
-        background-color: #C9A66B;
-        color: white;
-       }
-
-       .select-cap,
-       .verse{
-        border-radius: 3px;
-       }
-       
-       .verse{
-        padding: 10px;
-        box-sizing: border-box;
-        margin: 0 auto;
-        width: 90%;
-        background-color: #D9E4DD;
-       }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .menu-item {
+            padding: 12px 16px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .menu-item:hover {
+            background-color: oklch(var(--b2));
+        }
     </style>
 </head>
-<body>
-   <header class="header">
-       <button class="menu-btn">
-            <img src="icons/bars.svg" alt="" width="20">
-       </button>
-        <h1 class="title">Biblia</h1>
+<body class="min-h-screen">
+   <header class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-50">
+       <div class="flex-none">
+           <button class="menu-btn btn btn-ghost">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+               </svg>
+           </button>
+       </div>
+       <div class="flex-1">
+           <h1 class="title text-2xl font-bold text-primary">Biblia</h1>
+       </div>
    </header>
-    <div class="appContainer">
+    <div class="flex">
         
-        <div class="appContainer__left">
-            
-            <ul class="list list-hidden">
-               
-            </ul>
-            <div class="overlay">
-
-            </div>
-            
+<div class="appContainer__left">
+            <div class="fixed inset-0 z-40 bg-black/50 overlay hidden" onclick="closeMenu()"></div>
+            <aside class="transform -translate-x-full transition-transform duration-300 ease-in-out fixed left-0 top-0 z-50 h-full w-72 bg-base-200 p-4 overflow-y-auto sidebar-menu">
+                <h3 class="text-lg font-bold mb-4 text-primary">Libros</h3>
+                <ul class="menu p-0 w-full text-base-content list"></ul>
+            </aside>
         </div>
-        <main class="appContainer__right">
-            <nav id="currentCap"></nav>
-            <div class="containerText">
+        <main class="flex-1 p-4">
+            <nav id="currentCap" class="flex gap-2 overflow-x-auto pb-3 mb-4 sticky top-16 bg-base-100 border-b border-base-300"></nav>
+            <div class="containerText max-w-4xl mx-auto">
                 <div class="caps">
-                    <ul class="caps__list">
+                    <ul class="flex flex-wrap gap-4 caps__list">
                         
                     </ul>
                 </div>
-                <div class="home">
-                    <div class="verse">
-                        <h2 class="verse__title">Versículo del día</h2>
-                        <p class="verse__text">Jerusalen, Jerusanlen; cuantas veces trate de juntar a tus hijos como las gallinas juntan a los polluelos bajo sus alas, de cierto os digo que no me vereis hasta que digais: bendito sea el que viene en nombre del Señor</p>
-                        <span class="verse__cite bold">Mateo 23:17</span>
+                <div class="home mt-6">
+                    <div class="card bg-base-200 shadow-lg">
+                        <div class="card-body">
+                            <h2 class="card-title text-primary">Versículo del día</h2>
+                            <p class="verse__text text-lg leading-relaxed">Jerusalen, Jerusanlen; cuantas veces trate de juntar a tus hijos como las gallinas juntan a los polluelos bajo sus alas, de cierto os digo que no me vereis hasta que digais: bendito sea el que viene en nombre del Señor</p>
+                            <div class="card-actions justify-end mt-2">
+                                <span class="verse__cite badge badge-ghost font-bold">Mateo 23:17</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 

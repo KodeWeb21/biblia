@@ -10,7 +10,8 @@ let title = document.querySelector('.title');
 let currentBook;
 let currentChapter = 0;
 let nextChapter; 
-const $overlayMenu = document.querySelector('.appContainer__left');
+const $sidebar = document.querySelector('.sidebar-menu');
+const $overlay = document.querySelector('.overlay');
 const $btnMenu = document.querySelector('.menu-btn');
 
 const searchBook = (book) =>{
@@ -49,13 +50,16 @@ const showRandomVerse = ({name, capNumber, verseNumber, verse}) =>{
 
 
 const hideList = () =>{
-    $list.classList.add('list-hidden');
-    $overlayMenu.classList.remove('overlay-active');
+    $sidebar.classList.add('-translate-x-full');
+    $overlay.classList.add('hidden');
 }
 
-const hideCapsBook = () =>{
-    $currentCap.textContent = "";
+const openMenu = () =>{
+    $sidebar.classList.remove('-translate-x-full');
+    $overlay.classList.remove('hidden');
 }
+
+window.closeMenu = hideList;
 
 const hideCaps = () =>{
     if(firstLoad) $home.remove();
@@ -63,35 +67,31 @@ const hideCaps = () =>{
 }
 
 const scrollElement = () =>{
-    const $target = document.querySelector('.select-cap');
-    const scrollX = $target.getBoundingClientRect().left - $currentCap.getBoundingClientRect().left;
-    $currentCap.scrollTo({
-        left: scrollX,
-        behavior: 'smooth'
-    })
-}
-
-const selectNewCap = () =>{
-    $elSelected = [...$currentCap.children].filter(el=>el.classList.contains('select-cap'))[0].classList.remove('select-cap')
+    const $target = document.querySelector('.btn-primary');
+    if($target){
+        const scrollX = $target.getBoundingClientRect().left - $currentCap.getBoundingClientRect().left;
+        $currentCap.scrollTo({
+            left: scrollX,
+            behavior: 'smooth'
+        })
+    }
 }
 
 const showAllCaps = () =>{
     const totalCaps = currentBook.length;
-    const fragment = document.createDocumentFragment();
+    $currentCap.innerHTML = '';
     for(let cap = 1; cap <= totalCaps; cap++){
         const span = document.createElement('SPAN');
-        span.classList.add('itemsNav')
-        span.textContent = `capitulo ${cap}`;
+        span.classList.add('btn', 'btn-sm', 'btn-ghost')
+        span.textContent = `${cap}`;
         let keyCap = cap - 1;
         span.setAttribute('data-key-cap', keyCap);
         if(cap === currentChapter+1){
-            span.classList.add('select-cap');
-            console.log(span.getBoundingClientRect().left);
+            span.classList.add('btn-primary');
+            span.classList.remove('btn-ghost');
         }
-        hideCapsBook();
-        fragment.appendChild(span);
+        $currentCap.appendChild(span);
     }
-    $currentCap.appendChild(fragment)
 }
 
 const agregateBooks = () =>{
@@ -103,6 +103,7 @@ const agregateBooks = () =>{
         const fragment = document.createDocumentFragment();
         for(const data of dataRaw ){
             const li = document.createElement('LI');
+            li.classList.add('menu-item');
             li.textContent = data.shortTitle;
             li.setAttribute('data-key',data.key)
             fragment.appendChild(li);
@@ -116,20 +117,30 @@ const agregateBooks = () =>{
 
 
 const watchChapter = (cap) =>{
-    // $currentCap.textContent = "Capitulo "+ parseInt(currentChapter + 1)
-    showAllCaps()
+    $currentCap.querySelectorAll('span').forEach(span => {
+        span.classList.remove('btn-primary');
+        span.classList.add('btn-ghost');
+    });
+    
+    const $activeSpan = $currentCap.querySelector(`span[data-key-cap="${cap}"]`);
+    if($activeSpan){
+        $activeSpan.classList.remove('btn-ghost');
+        $activeSpan.classList.add('btn-primary');
+    }
+    
     scrollElement()
     const fragment = document.createDocumentFragment();
     let nVerse = 1;
     for(const verse of currentBook[cap]){
         const p = document.createElement('P');
-        p.classList.add('text');
-        p.innerHTML = `<span class="bold">${nVerse}.</span> ${verse}`;
+        p.classList.add('text-lg', 'mb-4', 'leading-relaxed');
+        p.innerHTML = `<span class="font-bold text-primary">${nVerse}.</span> ${verse}`;
         fragment.appendChild(p);
         nVerse++;
     }
     hideCaps();
     
+    $capList.innerHTML = '';
     $capList.appendChild(fragment);
 }
 
@@ -138,33 +149,25 @@ const showBookCaps = (book) =>{
     const fragment = document.createDocumentFragment();
     for(let i = 0; i < totalCaps; i++){
         const li = document.createElement('LI');
-        li.classList.add("caps__items");
+        li.classList.add("btn", "btn-outline", "btn-square");
         li.setAttribute('data-key-cap',i);
         li.textContent  = i + 1;
-        fragment.append(li);
+        fragment.appendChild(li);
     }
     $capList.appendChild(fragment);
 }
 
 const listenClickCaps = (event,element) => {
-    // const target = e.target;
-    // if(target.matches('li')||target.matches('li>*')){
-    //     const cap = target.getAttribute('data-key-cap');
-    //     currentChapter = parseInt(cap);
-    //     watchChapter(cap);
-    // }
-
     const target = event.target;
-    if(target.matches(`${element}`)||target.matches(`${element}>*`)){
-        const cap = target.getAttribute('data-key-cap');
+    const closestElement = target.closest(element);
+    if(closestElement){
+        const cap = closestElement.getAttribute('data-key-cap');
         currentChapter = parseInt(cap);
         watchChapter(cap);
     }
 }
 
-$overlayMenu.addEventListener('click',e=>{
-    hideList();
-})
+
 
 const readBooks = async (book)  =>{
      const bookForRead = await searchBook(book);
@@ -176,32 +179,31 @@ agregateBooks();
 
 $list.addEventListener('click',async (e)=>{
     const target = e.target;
-    hideList();
-    if(target.matches('li') || target.matches('li > *')){
-        hideCapsBook();
+    if(target.matches('.menu-item') || target.matches('.menu-item > *')){
         const keyBook = target.getAttribute('data-key');
         title.textContent = target.textContent;
         hideList();
         hideCaps();
+        $currentCap.innerHTML = '';
         readBooks(keyBook);
         return;
     }
-    console.log(target)
-   
-
 })
 
 $capList.addEventListener('click',e=>{
     listenClickCaps(e,'li');
 })
 
-
 $btnMenu.addEventListener('click',()=>{
-    $list.classList.toggle('list-hidden');
-    $overlayMenu.classList.toggle('overlay-active');
+    openMenu();
 })
 
 $currentCap.addEventListener('click',(e)=>{
-    listenClickCaps(e,'span');
-    scrollElement();
+    const target = e.target;
+    const closestElement = target.closest('span');
+    if(closestElement){
+        const cap = closestElement.getAttribute('data-key-cap');
+        currentChapter = parseInt(cap);
+        watchChapter(cap);
+    }
 })
