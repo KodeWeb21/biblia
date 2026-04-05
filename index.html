@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="synthwave">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,64 +20,75 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         .menu-item {
             padding: 12px 16px;
             border-radius: 0.5rem;
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .menu-item:hover {
             background-color: oklch(var(--b2));
         }
     </style>
 </head>
+
 <body class="min-h-screen">
-   <header class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-50">
-       <div class="flex-none">
-           <button class="menu-btn btn btn-ghost">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
-               </svg>
-           </button>
-       </div>
-       <div class="flex-1 justify-between">
-           <h1 class="title text-2xl font-bold text-primary">Biblia</h1>
-           <span id="bookCap" class="align-right inline-block mr-10 cursor-pointer hover:text-primary transition-colors font-bold"></span>
-       </div>
-   </header>
+    <header class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-50">
+        <div class="flex-none">
+            <button class="menu-btn btn btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </button>
+        </div>
+        <div class="flex-1 items-start flex-col">
+            <h1 class="title text-2xl font-bold text-primary">Biblia</h1>
+            <span id="bookCap"
+                class="align-right inline-block mr-10 cursor-pointer hover:text-primary transition-colors font-bold"></span>
+        </div>
+    </header>
     <div class="flex">
-        
-<div class="appContainer__left">
+
+        <div class="appContainer__left">
             <div class="fixed inset-0 z-40 bg-black/50 overlay hidden" onclick="closeMenu()"></div>
-            <aside class="transform -translate-x-full transition-transform duration-300 ease-in-out fixed left-0 top-0 z-50 h-full w-72 bg-base-200 p-4 overflow-y-auto sidebar-menu">
+            <aside
+                class="transform -translate-x-full transition-transform duration-300 ease-in-out fixed left-0 top-0 z-50 h-full w-72 bg-base-200 p-4 overflow-y-auto sidebar-menu">
                 <h3 class="text-lg font-bold mb-4 text-primary">Libros</h3>
-                <input type="text" id="searchBookInput" placeholder="Buscar libro..." class="input input-bordered w-full mb-4">
+                <input type="text" id="searchBookInput" placeholder="Buscar libro..."
+                    class="input input-bordered w-full mb-4">
                 <ul class="menu p-0 w-full text-base-content list"></ul>
             </aside>
         </div>
         <main class="flex-1 p-4">
-            <nav id="currentCap" class="flex gap-2 overflow-x-auto pb-3 mb-4 sticky top-16 bg-base-100 border-b border-base-300"></nav>
+            <nav id="currentCap"
+                class="flex gap-2 overflow-x-auto pb-3 mb-4 sticky top-16 bg-base-100 border-b border-base-300"></nav>
             <div class="containerText max-w-4xl mx-auto">
                 <div class="caps">
                     <ul class="flex flex-wrap gap-4 caps__list">
-                        
+
                     </ul>
                 </div>
                 <div class="home mt-6">
                     <div class="card bg-base-200 shadow-lg">
                         <div class="card-body">
                             <h2 class="card-title text-primary">Versículo del día</h2>
-                            <p class="verse__text text-lg leading-relaxed">Jerusalen, Jerusanlen; cuantas veces trate de juntar a tus hijos como las gallinas juntan a los polluelos bajo sus alas, de cierto os digo que no me vereis hasta que digais: bendito sea el que viene en nombre del Señor</p>
+                            <p class="verse__text text-lg leading-relaxed">Jerusalen, Jerusanlen; cuantas veces trate de
+                                juntar a tus hijos como las gallinas juntan a los polluelos bajo sus alas, de cierto os
+                                digo que no me vereis hasta que digais: bendito sea el que viene en nombre del Señor</p>
                             <div class="card-actions justify-end mt-2">
                                 <span class="verse__cite badge badge-ghost font-bold">Mateo 23:17</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </main>
     </div>
     <script src="js/scripts.js"></script>
 </body>
+
 </html>
