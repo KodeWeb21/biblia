@@ -44,10 +44,19 @@
                 </svg>
             </button>
         </div>
-        <div class="flex-1 items-start flex-col">
-            <h1 class="title text-2xl font-bold text-primary">Biblia</h1>
-            <span id="bookCap"
-                class="align-right inline-block mr-10 cursor-pointer hover:text-primary transition-colors font-bold"></span>
+        <div class="flex-1 flex justify-between items-center w-full px-2">
+            <div class="flex items-start flex-col">
+                <h1 class="title text-2xl font-bold text-primary">Biblia</h1>
+                <span id="bookCap" class="font-bold"></span>
+            </div>
+            <button id="btnBackToCaps" class="btn btn-ghost btn-circle text-primary hidden" title="Volver a capítulos">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-book-open">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+            </button>
         </div>
     </header>
     <div class="flex">

@@ -155,6 +155,10 @@ const watchChapter = (cap) => {
 
     // Inyectar controles fuera del contenedor de flex para no romper el layout
     renderDynamicNav(cap);
+
+    // Mostrar el botón de volver a capítulos
+    const $btnBackToCaps = document.getElementById('btnBackToCaps');
+    if ($btnBackToCaps) $btnBackToCaps.classList.remove('hidden');
 }
 
 const renderDynamicNav = (cap) => {
@@ -171,7 +175,7 @@ const renderDynamicNav = (cap) => {
 
         const btnN = document.createElement('button');
         btnN.id = 'dynamic-next';
-        btnN.className = 'btn btn-outline btn-neutral';
+        btnN.className = 'btn btn-outline btn-neutral text-primary';
         btnN.innerHTML = 'Siguiente &raquo;';
 
         dynamicNav.appendChild(btnP);
@@ -249,21 +253,26 @@ agregateBooks();
 
 const resetBookCap = () => {
     bookCap.textContent = "";
+    const $btnBackToCaps = document.getElementById('btnBackToCaps');
+    if ($btnBackToCaps) $btnBackToCaps.classList.add('hidden');
 }
 
-bookCap.addEventListener('click', () => {
-    if (currentBook && bookCap.textContent !== "") {
-        $capList.innerHTML = '';
-        showBookCaps(currentBook);
-        $currentCap.innerHTML = '';
+const $btnBackToCaps = document.getElementById('btnBackToCaps');
+if ($btnBackToCaps) {
+    $btnBackToCaps.addEventListener('click', () => {
+        if (currentBook) {
+            $capList.innerHTML = '';
+            showBookCaps(currentBook);
+            $currentCap.innerHTML = '';
 
-        const nav = document.getElementById('dynamic-nav-container');
-        if (nav) nav.remove();
+            const nav = document.getElementById('dynamic-nav-container');
+            if (nav) nav.remove();
 
-        resetBookCap();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-});
+            resetBookCap();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+}
 
 $list.addEventListener('click', async (e) => {
     const target = e.target;
