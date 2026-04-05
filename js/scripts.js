@@ -9,21 +9,21 @@ const $currentCap = document.getElementById('currentCap');
 let title = document.querySelector('.title');
 let currentBook;
 let currentChapter = 0;
-let nextChapter; 
+let nextChapter;
 const $sidebar = document.querySelector('.sidebar-menu');
 const $overlay = document.querySelector('.overlay');
 const $btnMenu = document.querySelector('.menu-btn');
- const bookCap = document.getElementById('bookCap');
+const bookCap = document.getElementById('bookCap');
 
-const searchBook = (book) =>{
+const searchBook = (book) => {
     return fetch(`/biblia/${book}.json`)
-    .then(r=>r.json())
-    .then(data=>data)
-    .catch(err=>err)
+        .then(r => r.json())
+        .then(data => data)
+        .catch(err => err)
 }
 
 
-const randomVerse = async () =>{
+const randomVerse = async () => {
     const randomBook = Math.floor(Math.random() * 66);
     const bookRaw = dataLibros[randomBook];
     const book = await searchBook(`${bookRaw.key}`);
@@ -40,7 +40,7 @@ const randomVerse = async () =>{
 }
 
 
-const showRandomVerse = ({name, capNumber, verseNumber, verse}) =>{
+const showRandomVerse = ({ name, capNumber, verseNumber, verse }) => {
     const verseText = document.querySelector('.verse__text');
     const verseCite = document.querySelector('.verse__cite');
 
@@ -50,17 +50,17 @@ const showRandomVerse = ({name, capNumber, verseNumber, verse}) =>{
 
 
 
-const hideList = () =>{
+const hideList = () => {
     $sidebar.classList.add('-translate-x-full');
     $overlay.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
 }
 
-const openMenu = () =>{
+const openMenu = () => {
     $sidebar.classList.remove('-translate-x-full');
     $overlay.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
-    
+
     const $searchBookInput = document.getElementById('searchBookInput');
     if ($searchBookInput) {
         $searchBookInput.value = '';
@@ -71,14 +71,14 @@ const openMenu = () =>{
 
 window.closeMenu = hideList;
 
-const hideCaps = () =>{
-    if(firstLoad) $home.remove();
-    if($capList.childElementCount > 0) $capList.innerHTML = "";
+const hideCaps = () => {
+    if (firstLoad) $home.remove();
+    if ($capList.childElementCount > 0) $capList.innerHTML = "";
 }
 
-const scrollElement = () =>{
+const scrollElement = () => {
     const $target = document.querySelector('.btn-primary');
-    if($target){
+    if ($target) {
         const scrollX = $target.getBoundingClientRect().left - $currentCap.getBoundingClientRect().left;
         $currentCap.scrollTo({
             left: scrollX,
@@ -87,16 +87,16 @@ const scrollElement = () =>{
     }
 }
 
-const showAllCaps = () =>{
+const showAllCaps = () => {
     const totalCaps = currentBook.length;
     $currentCap.innerHTML = '';
-    for(let cap = 1; cap <= totalCaps; cap++){
+    for (let cap = 1; cap <= totalCaps; cap++) {
         const span = document.createElement('SPAN');
         span.classList.add('btn', 'btn-sm', 'btn-ghost')
         span.textContent = `${cap}`;
         let keyCap = cap - 1;
         span.setAttribute('data-key-cap', keyCap);
-        if(cap === currentChapter+1){
+        if (cap === currentChapter + 1) {
             span.classList.add('btn-primary');
             span.classList.remove('btn-ghost');
         }
@@ -104,44 +104,44 @@ const showAllCaps = () =>{
     }
 }
 
-const agregateBooks = () =>{
+const agregateBooks = () => {
     fetch('/biblia/_index.json')
-    .then(r=>r.json())
-    .then(dataRaw=>{
-        dataLibros = dataRaw;
-        randomVerse()
-        const fragment = document.createDocumentFragment();
-        for(const data of dataRaw ){
-            const li = document.createElement('LI');
-            li.classList.add('menu-item');
-            li.textContent = data.shortTitle;
-            li.setAttribute('data-key',data.key)
-            fragment.appendChild(li);
-        }
-    
-        $list.appendChild(fragment);
-    })
-    
+        .then(r => r.json())
+        .then(dataRaw => {
+            dataLibros = dataRaw;
+            randomVerse()
+            const fragment = document.createDocumentFragment();
+            for (const data of dataRaw) {
+                const li = document.createElement('LI');
+                li.classList.add('menu-item');
+                li.textContent = data.shortTitle;
+                li.setAttribute('data-key', data.key)
+                fragment.appendChild(li);
+            }
+
+            $list.appendChild(fragment);
+        })
+
 }
 
 
 
-const watchChapter = (cap) =>{
+const watchChapter = (cap) => {
     $currentCap.querySelectorAll('span').forEach(span => {
         span.classList.remove('btn-primary');
         span.classList.add('btn-ghost');
     });
-    
+
     const $activeSpan = $currentCap.querySelector(`span[data-key-cap="${cap}"]`);
-    if($activeSpan){
+    if ($activeSpan) {
         $activeSpan.classList.remove('btn-ghost');
         $activeSpan.classList.add('btn-primary');
     }
-    
+
     scrollElement()
     const fragment = document.createDocumentFragment();
     let nVerse = 1;
-    for(const verse of currentBook[cap]){
+    for (const verse of currentBook[cap]) {
         const p = document.createElement('P');
         p.classList.add('text-lg', 'mb-4', 'leading-relaxed');
         p.innerHTML = `<span class="font-bold text-primary">${nVerse}.</span> ${verse}`;
@@ -149,7 +149,7 @@ const watchChapter = (cap) =>{
         nVerse++;
     }
     hideCaps();
-    
+
     $capList.innerHTML = '';
     $capList.appendChild(fragment);
 
@@ -163,37 +163,37 @@ const renderDynamicNav = (cap) => {
         dynamicNav = document.createElement('div');
         dynamicNav.id = 'dynamic-nav-container';
         dynamicNav.className = 'flex justify-between mt-8 mb-4 border-t border-base-300 pt-4';
-        
+
         const btnP = document.createElement('button');
         btnP.id = 'dynamic-prev';
         btnP.className = 'btn btn-outline btn-neutral'; // Neutral evita la colisión en document.querySelector('.btn-primary')
         btnP.innerHTML = '&laquo; Anterior';
-        
+
         const btnN = document.createElement('button');
         btnN.id = 'dynamic-next';
         btnN.className = 'btn btn-outline btn-neutral';
         btnN.innerHTML = 'Siguiente &raquo;';
-        
+
         dynamicNav.appendChild(btnP);
         dynamicNav.appendChild(btnN);
-        
+
         const $containerText = document.querySelector('.containerText');
         $containerText.appendChild(dynamicNav);
     }
 
     const prev = document.getElementById('dynamic-prev');
     const next = document.getElementById('dynamic-next');
-    
+
     const newPrev = prev.cloneNode(true);
     const newNext = next.cloneNode(true);
-    
+
     newPrev.disabled = parseInt(cap) === 0;
     newNext.disabled = parseInt(cap) >= currentBook.length - 1;
-    
+
     newPrev.addEventListener('click', () => {
         if (currentChapter > 0) {
             currentChapter--;
-            bookCap.textContent = currentChapter + 1;
+            bookCap.textContent = "Capitulo " + (currentChapter + 1);
             watchChapter(currentChapter);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -202,33 +202,33 @@ const renderDynamicNav = (cap) => {
     newNext.addEventListener('click', () => {
         if (currentChapter < currentBook.length - 1) {
             currentChapter++;
-            bookCap.textContent = currentChapter + 1;
+            bookCap.textContent = "Capitulo " + (currentChapter + 1);
             watchChapter(currentChapter);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
-    
+
     dynamicNav.replaceChild(newPrev, prev);
     dynamicNav.replaceChild(newNext, next);
 }
 
-const showBookCaps = (book) =>{
+const showBookCaps = (book) => {
     const totalCaps = book.length;
     const fragment = document.createDocumentFragment();
-    for(let i = 0; i < totalCaps; i++){
+    for (let i = 0; i < totalCaps; i++) {
         const li = document.createElement('LI');
         li.classList.add("btn", "btn-outline", "btn-square");
-        li.setAttribute('data-key-cap',i);
-        li.textContent  = i + 1;
+        li.setAttribute('data-key-cap', i);
+        li.textContent = i + 1;
         fragment.appendChild(li);
     }
     $capList.appendChild(fragment);
 }
 
-const listenClickCaps = (event,element) => {
+const listenClickCaps = (event, element) => {
     const target = event.target;
     const closestElement = target.closest(element);
-    if(closestElement){
+    if (closestElement) {
         const cap = closestElement.getAttribute('data-key-cap');
         currentChapter = parseInt(cap);
         watchChapter(cap);
@@ -237,12 +237,12 @@ const listenClickCaps = (event,element) => {
 
 
 
-const readBooks = async (book)  =>{
-     const bookForRead = await searchBook(book);
-     currentBook = bookForRead;
-     showBookCaps(bookForRead);
-     const nav = document.getElementById('dynamic-nav-container');
-     if (nav) nav.remove();
+const readBooks = async (book) => {
+    const bookForRead = await searchBook(book);
+    currentBook = bookForRead;
+    showBookCaps(bookForRead);
+    const nav = document.getElementById('dynamic-nav-container');
+    if (nav) nav.remove();
 }
 
 agregateBooks();
@@ -251,9 +251,23 @@ const resetBookCap = () => {
     bookCap.textContent = "";
 }
 
-$list.addEventListener('click',async (e)=>{
+bookCap.addEventListener('click', () => {
+    if (currentBook && bookCap.textContent !== "") {
+        $capList.innerHTML = '';
+        showBookCaps(currentBook);
+        $currentCap.innerHTML = '';
+
+        const nav = document.getElementById('dynamic-nav-container');
+        if (nav) nav.remove();
+
+        resetBookCap();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+});
+
+$list.addEventListener('click', async (e) => {
     const target = e.target;
-    if(target.matches('.menu-item') || target.matches('.menu-item > *')){
+    if (target.matches('.menu-item') || target.matches('.menu-item > *')) {
         const keyBook = target.getAttribute('data-key');
         title.textContent = target.textContent;
         resetBookCap();
@@ -265,19 +279,19 @@ $list.addEventListener('click',async (e)=>{
     }
 })
 
-$capList.addEventListener('click',e=>{
-    listenClickCaps(e,'li');
-    bookCap.textContent = currentChapter + 1;
+$capList.addEventListener('click', e => {
+    listenClickCaps(e, 'li');
+    bookCap.textContent = "Capitulo " + (currentChapter + 1);
 })
 
-$btnMenu.addEventListener('click',()=>{
+$btnMenu.addEventListener('click', () => {
     openMenu();
 })
 
-$currentCap.addEventListener('click',(e)=>{
+$currentCap.addEventListener('click', (e) => {
     const target = e.target;
     const closestElement = target.closest('span');
-    if(closestElement){
+    if (closestElement) {
         const cap = closestElement.getAttribute('data-key-cap');
         currentChapter = parseInt(cap);
         watchChapter(cap);
