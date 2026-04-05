@@ -284,13 +284,18 @@ $currentCap.addEventListener('click',(e)=>{
     }
 })
 
+const removeAccents = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
 const $searchBookInput = document.getElementById('searchBookInput');
 if ($searchBookInput) {
     $searchBookInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
+        const searchTerm = removeAccents(e.target.value.toLowerCase());
         const items = $list.querySelectorAll('.menu-item');
         items.forEach(item => {
-            if (item.textContent.toLowerCase().includes(searchTerm)) {
+            const itemName = removeAccents(item.textContent.toLowerCase());
+            if (itemName.includes(searchTerm)) {
                 item.style.display = '';
             } else {
                 item.style.display = 'none';
