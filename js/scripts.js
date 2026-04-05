@@ -13,6 +13,7 @@ let nextChapter;
 const $sidebar = document.querySelector('.sidebar-menu');
 const $overlay = document.querySelector('.overlay');
 const $btnMenu = document.querySelector('.menu-btn');
+ const bookCap = document.getElementById('bookCap');
 
 const searchBook = (book) =>{
     return fetch(`/biblia/${book}.json`)
@@ -52,11 +53,13 @@ const showRandomVerse = ({name, capNumber, verseNumber, verse}) =>{
 const hideList = () =>{
     $sidebar.classList.add('-translate-x-full');
     $overlay.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
 }
 
 const openMenu = () =>{
     $sidebar.classList.remove('-translate-x-full');
     $overlay.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
 }
 
 window.closeMenu = hideList;
@@ -177,11 +180,16 @@ const readBooks = async (book)  =>{
 
 agregateBooks();
 
+const resetBookCap = () => {
+    bookCap.textContent = "";
+}
+
 $list.addEventListener('click',async (e)=>{
     const target = e.target;
     if(target.matches('.menu-item') || target.matches('.menu-item > *')){
         const keyBook = target.getAttribute('data-key');
         title.textContent = target.textContent;
+        resetBookCap();
         hideList();
         hideCaps();
         $currentCap.innerHTML = '';
@@ -192,6 +200,7 @@ $list.addEventListener('click',async (e)=>{
 
 $capList.addEventListener('click',e=>{
     listenClickCaps(e,'li');
+    bookCap.textContent = currentChapter + 1;
 })
 
 $btnMenu.addEventListener('click',()=>{
