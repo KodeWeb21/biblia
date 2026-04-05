@@ -143,8 +143,8 @@ const watchChapter = (cap) => {
     let nVerse = 1;
     for (const verse of currentBook[cap]) {
         const p = document.createElement('P');
-        p.classList.add('text-lg', 'mb-4', 'leading-relaxed');
-        p.innerHTML = `<span class="font-bold text-primary">${nVerse}.</span> ${verse}`;
+        p.classList.add('text-lg', 'mb-4', 'leading-relaxed', 'font-reading');
+        p.innerHTML = `<span class="font-bold text-primary font-sans">${nVerse}.</span> ${verse}`;
         fragment.appendChild(p);
         nVerse++;
     }

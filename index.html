@@ -13,6 +13,7 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
+                        reading: ['Lora', 'Georgia', 'serif'],
                     }
                 }
             }
@@ -20,6 +21,7 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
         .menu-item {
             padding: 12px 16px;
@@ -73,7 +75,7 @@
         </div>
         <main class="flex-1 p-4">
             <nav id="currentCap"
-                class="flex gap-2 overflow-x-auto pb-3 mb-4 sticky top-16 bg-base-100 border-b border-base-300"></nav>
+                class="flex gap-2 overflow-x-auto pb-3 mb-4 sticky top-16 bg-base-100  border-base-300"></nav>
             <div class="containerText max-w-4xl mx-auto">
                 <div class="caps">
                     <ul class="flex flex-wrap gap-4 caps__list">
@@ -84,7 +86,7 @@
                     <div class="card bg-base-200 shadow-lg">
                         <div class="card-body">
                             <h2 class="card-title text-primary">Versículo del día</h2>
-                            <p class="verse__text text-lg leading-relaxed">Jerusalen, Jerusanlen; cuantas veces trate de
+                            <p class="verse__text text-lg leading-relaxed font-reading">Jerusalen, Jerusanlen; cuantas veces trate de
                                 juntar a tus hijos como las gallinas juntan a los polluelos bajo sus alas, de cierto os
                                 digo que no me vereis hasta que digais: bendito sea el que viene en nombre del Señor</p>
                             <div class="card-actions justify-end mt-2">
