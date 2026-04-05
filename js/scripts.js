@@ -111,7 +111,20 @@ const agregateBooks = () => {
             dataLibros = dataRaw;
             randomVerse()
             const fragment = document.createDocumentFragment();
+            let currentTestament = "";
+
             for (const data of dataRaw) {
+                if (data.testament !== currentTestament) {
+                    currentTestament = data.testament;
+                    const header = document.createElement('LI');
+                    // Usamos clases de daisyUI/Tailwind para dar estilo de subtítulo
+                    header.classList.add('menu-title', 'text-xs', 'font-bold', 'text-base-content/50', 'uppercase', 'tracking-widest', 'mt-4', 'mb-1', 'pl-4');
+                    header.textContent = currentTestament === "A.T." ? "Antiguo Testamento" : "Nuevo Testamento";
+                    // Aseguramos que el buscador no lo oculte si no queremos, o podemos ponerle una clase custom
+                    header.classList.add('testament-header'); 
+                    fragment.appendChild(header);
+                }
+
                 const li = document.createElement('LI');
                 li.classList.add('menu-item');
                 li.textContent = data.shortTitle;
