@@ -60,6 +60,13 @@ const openMenu = () =>{
     $sidebar.classList.remove('-translate-x-full');
     $overlay.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+    
+    const $searchBookInput = document.getElementById('searchBookInput');
+    if ($searchBookInput) {
+        $searchBookInput.value = '';
+        $list.querySelectorAll('.menu-item').forEach(item => item.style.display = '');
+        setTimeout(() => $searchBookInput.focus(), 300);
+    }
 }
 
 window.closeMenu = hideList;
@@ -276,3 +283,18 @@ $currentCap.addEventListener('click',(e)=>{
         watchChapter(cap);
     }
 })
+
+const $searchBookInput = document.getElementById('searchBookInput');
+if ($searchBookInput) {
+    $searchBookInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const items = $list.querySelectorAll('.menu-item');
+        items.forEach(item => {
+            if (item.textContent.toLowerCase().includes(searchTerm)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+}
