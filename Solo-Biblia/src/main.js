@@ -172,6 +172,9 @@ const watchChapter = (cap) => {
   // Mostrar el botón de volver a capítulos
   const $btnBackToCaps = document.getElementById('btnBackToCaps');
   if ($btnBackToCaps) $btnBackToCaps.classList.remove('hidden');
+
+  const $btnReturnToReading = document.getElementById('btnReturnToReading');
+  if ($btnReturnToReading) $btnReturnToReading.classList.add('hidden');
 }
 
 const renderDynamicNav = (cap) => {
@@ -267,6 +270,9 @@ const readBooks = async (book) => {
   showBookCaps(bookForRead);
   const nav = document.getElementById('dynamic-nav-container');
   if (nav) nav.remove();
+
+  const $btnReturnToReading = document.getElementById('btnReturnToReading');
+  if ($btnReturnToReading) $btnReturnToReading.classList.add('hidden');
 }
 
 agregateBooks();
@@ -278,6 +284,8 @@ const resetBookCap = () => {
 }
 
 const $btnBackToCaps = document.getElementById('btnBackToCaps');
+const $btnReturnToReading = document.getElementById('btnReturnToReading');
+
 if ($btnBackToCaps) {
   $btnBackToCaps.addEventListener('click', () => {
     if (currentBook) {
@@ -289,6 +297,18 @@ if ($btnBackToCaps) {
       if (nav) nav.remove();
 
       resetBookCap();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if ($btnReturnToReading) $btnReturnToReading.classList.remove('hidden');
+    }
+  });
+}
+
+if ($btnReturnToReading) {
+  $btnReturnToReading.addEventListener('click', () => {
+    if (currentBook && currentChapter !== undefined) {
+      bookCap.textContent = "Capitulo " + (currentChapter + 1);
+      watchChapter(currentChapter);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
