@@ -329,6 +329,16 @@ $list.addEventListener('click', async (e) => {
 })
 
 $capList.addEventListener('click', e => {
+  const target = e.target;
+  const pElement = target.closest('p');
+  
+  // Si se hizo clic en un versículo (párrafo)
+  if (pElement && $capList.contains(pElement)) {
+    pElement.classList.toggle('verse-highlighted');
+    // Para no seguir y desencadenar clics de capítulos
+    return;
+  }
+
   listenClickCaps(e, 'li');
   bookCap.textContent = "Capitulo " + (currentChapter + 1);
 })
