@@ -8,6 +8,7 @@ const $btnPrev = document.getElementById('prevBtn');
 const $currentCap = document.getElementById('currentCap');
 let title = document.querySelector('.title');
 let currentBook;
+let currentBookKey;
 let currentChapter = 0;
 let nextChapter;
 const $sidebar = document.querySelector('.sidebar-menu');
@@ -154,10 +155,17 @@ const watchChapter = (cap) => {
   scrollElement()
   const fragment = document.createDocumentFragment();
   let nVerse = 1;
+  const storageKey = `highlight-${currentBookKey}-${cap}`;
+  const highlightedVerses = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+
   for (const verse of currentBook[cap]) {
     const p = document.createElement('P');
     p.classList.add('text-lg', 'mb-4', 'leading-relaxed', 'font-reading');
     p.innerHTML = `<span class="font-bold text-primary font-sans">${nVerse}.</span> ${verse}`;
+    p.setAttribute('data-verse-index', nVerse);
+    if (highlightedVerses.includes(nVerse)) {
+      p.classList.add('verse-highlighted');
+    }
     fragment.appendChild(p);
     nVerse++;
   }
@@ -265,6 +273,7 @@ const listenClickCaps = (event, element) => {
 
 
 const readBooks = async (book) => {
+  currentBookKey = book;
   const bookForRead = await searchBook(book);
   currentBook = bookForRead;
   showBookCaps(bookForRead);
@@ -335,6 +344,20 @@ $capList.addEventListener('click', e => {
   // Si se hizo clic en un versículo (párrafo)
   if (pElement && $capList.contains(pElement)) {
     pElement.classList.toggle('verse-highlighted');
+
+    const verseIndex = parseInt(pElement.getAttribute('data-verse-index'));
+    const storageKey = `highlight-${currentBookKey}-${currentChapter}`;
+    let highlightedVerses = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+
+    if (pElement.classList.contains('verse-highlighted')) {
+      if (!highlightedVerses.includes(verseIndex)) {
+        highlightedVerses.push(verseIndex);
+      }
+    } else {
+      highlightedVerses = highlightedVerses.filter(v => v !== verseIndex);
+    }
+    sessionStorage.setItem(storageKey, JSON.stringify(highlightedVerses));
+
     // Para no seguir y desencadenar clics de capítulos
     return;
   }
