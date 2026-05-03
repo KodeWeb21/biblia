@@ -399,3 +399,245 @@ if ($searchBookInput) {
     });
   });
 }
+
+
+// =============================================
+// GLOBAL BIBLE SEARCH
+// =============================================
+const $searchOverlay = document.getElementById('searchOverlay');
+const $globalSearchInput = document.getElementById('globalSearchInput');
+const $searchResults = document.getElementById('searchResults');
+const $searchTabs = document.getElementById('searchTabs');
+const $btnOpenSearch = document.getElementById('btnOpenSearch');
+const $btnCloseSearch = document.getElementById('btnCloseSearch');
+const $btnClearSearch = document.getElementById('btnClearSearch');
+
+let allBooksData = null; // Cache of all loaded books
+let searchDebounceTimer = null;
+let currentSearchFilter = 'all'; // 'all' or a book key
+let lastSearchResults = []; // store results for filtering
+
+const openSearchOverlay = () => {
+  $searchOverlay.classList.add('active');
+  setTimeout(() => $globalSearchInput.focus(), 350);
+};
+
+const closeSearchOverlay = () => {
+  $searchOverlay.classList.remove('active');
+  $globalSearchInput.blur();
+};
+
+$btnOpenSearch.addEventListener('click', openSearchOverlay);
+$btnCloseSearch.addEventListener('click', closeSearchOverlay);
+
+$btnClearSearch.addEventListener('click', () => {
+  $globalSearchInput.value = '';
+  $btnClearSearch.classList.add('hidden');
+  $searchTabs.classList.add('hidden');
+  $searchTabs.innerHTML = '';
+  $searchResults.innerHTML = '<div class="search-empty">Escribe al menos 3 caracteres para buscar</div>';
+  lastSearchResults = [];
+  $globalSearchInput.focus();
+});
+
+// Load all books once on first search
+const loadAllBooks = async () => {
+  if (allBooksData) return allBooksData;
+
+  $searchResults.innerHTML = '<div class="search-loading">Cargando datos de la Biblia...</div>';
+
+  const allBooks = {};
+  const promises = dataLibros.map(async (bookInfo) => {
+    const data = await searchBook(bookInfo.key);
+    allBooks[bookInfo.key] = data;
+  });
+
+  await Promise.all(promises);
+  allBooksData = allBooks;
+  return allBooks;
+};
+
+const highlightText = (text, term) => {
+  const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.replace(regex, '<mark>$1</mark>');
+};
+
+const performSearch = async (query) => {
+  if (!dataLibros) return;
+
+  const books = await loadAllBooks();
+  const termNorm = removeAccents(query.toLowerCase());
+  const results = []; // { bookKey, bookName, chapter, verse, verseIndex, text }
+
+  for (const bookInfo of dataLibros) {
+    const bookData = books[bookInfo.key];
+    if (!bookData) continue;
+
+    for (let ch = 0; ch < bookData.length; ch++) {
+      for (let v = 0; v < bookData[ch].length; v++) {
+        const verseText = bookData[ch][v];
+        if (removeAccents(verseText.toLowerCase()).includes(termNorm)) {
+          results.push({
+            bookKey: bookInfo.key,
+            bookName: bookInfo.shortTitle,
+            chapter: ch + 1,
+            verseIndex: v + 1,
+            text: verseText,
+          });
+        }
+      }
+    }
+  }
+
+  lastSearchResults = results;
+  currentSearchFilter = 'all';
+  renderSearchTabs(results, query);
+  renderSearchResults(results, query);
+};
+
+const renderSearchTabs = (results, query) => {
+  // Group by book
+  const bookCounts = {};
+  for (const r of results) {
+    bookCounts[r.bookKey] = (bookCounts[r.bookKey] || { name: r.bookName, count: 0 });
+    bookCounts[r.bookKey].count++;
+  }
+
+  $searchTabs.innerHTML = '';
+  if (results.length === 0) {
+    $searchTabs.classList.add('hidden');
+    return;
+  }
+  $searchTabs.classList.remove('hidden');
+
+  // "Todos" tab
+  const allTab = document.createElement('button');
+  allTab.className = 'search-tab active';
+  allTab.textContent = `Todos: ${results.length}`;
+  allTab.dataset.filter = 'all';
+  $searchTabs.appendChild(allTab);
+
+  // Sort by count descending, take top books
+  const sorted = Object.entries(bookCounts).sort((a, b) => b[1].count - a[1].count);
+  for (const [key, info] of sorted) {
+    const tab = document.createElement('button');
+    tab.className = 'search-tab';
+    tab.textContent = `${info.name}: ${info.count}`;
+    tab.dataset.filter = key;
+    $searchTabs.appendChild(tab);
+  }
+};
+
+const renderSearchResults = (results, query) => {
+  if (results.length === 0) {
+    $searchResults.innerHTML = '<div class="search-empty">No se encontraron resultados</div>';
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  const maxResults = 200;
+  const shown = results.slice(0, maxResults);
+
+  for (const r of shown) {
+    const item = document.createElement('div');
+    item.className = 'search-result-item';
+    item.dataset.bookKey = r.bookKey;
+    item.dataset.bookName = r.bookName;
+    item.dataset.chapter = r.chapter;
+    item.dataset.verseIndex = r.verseIndex;
+
+    const ref = document.createElement('div');
+    ref.className = 'search-result-ref';
+    ref.textContent = `[${r.bookName} ${r.chapter}:${r.verseIndex}]`;
+
+    const text = document.createElement('div');
+    text.className = 'search-result-text';
+    text.innerHTML = highlightText(r.text, query);
+
+    item.appendChild(ref);
+    item.appendChild(text);
+    fragment.appendChild(item);
+  }
+
+  if (results.length > maxResults) {
+    const more = document.createElement('div');
+    more.className = 'search-empty';
+    more.textContent = `Mostrando ${maxResults} de ${results.length} resultados. Refina tu búsqueda.`;
+    fragment.appendChild(more);
+  }
+
+  $searchResults.innerHTML = '';
+  $searchResults.appendChild(fragment);
+};
+
+// Tab click filtering
+$searchTabs.addEventListener('click', (e) => {
+  const tab = e.target.closest('.search-tab');
+  if (!tab) return;
+
+  $searchTabs.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+
+  const filter = tab.dataset.filter;
+  currentSearchFilter = filter;
+
+  const query = $globalSearchInput.value.trim();
+  let filtered = lastSearchResults;
+  if (filter !== 'all') {
+    filtered = lastSearchResults.filter(r => r.bookKey === filter);
+  }
+  renderSearchResults(filtered, query);
+});
+
+// Click on result -> navigate to that book/chapter
+$searchResults.addEventListener('click', async (e) => {
+  const item = e.target.closest('.search-result-item');
+  if (!item) return;
+
+  const bookKey = item.dataset.bookKey;
+  const bookName = item.dataset.bookName;
+  const chapter = parseInt(item.dataset.chapter);
+
+  // Close overlay
+  closeSearchOverlay();
+
+  // Navigate to the book
+  title.textContent = bookName;
+  resetBookCap();
+  hideCaps();
+  $currentCap.innerHTML = '';
+  await readBooks(bookKey);
+
+  // Now open the chapter
+  currentChapter = chapter - 1;
+  bookCap.textContent = "Capitulo " + chapter;
+  watchChapter(currentChapter);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Debounced input
+$globalSearchInput.addEventListener('input', (e) => {
+  const query = e.target.value.trim();
+
+  if (query.length > 0) {
+    $btnClearSearch.classList.remove('hidden');
+  } else {
+    $btnClearSearch.classList.add('hidden');
+  }
+
+  clearTimeout(searchDebounceTimer);
+
+  if (query.length < 3) {
+    $searchTabs.classList.add('hidden');
+    $searchTabs.innerHTML = '';
+    $searchResults.innerHTML = '<div class="search-empty">Escribe al menos 3 caracteres para buscar</div>';
+    lastSearchResults = [];
+    return;
+  }
+
+  $searchResults.innerHTML = '<div class="search-loading">Buscando...</div>';
+
+  searchDebounceTimer = setTimeout(() => {
+    performSearch(query);
+  }, 400);
+});
