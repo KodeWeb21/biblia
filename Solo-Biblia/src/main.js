@@ -641,3 +641,53 @@ $globalSearchInput.addEventListener('input', (e) => {
     performSearch(query);
   }, 400);
 });
+
+// =============================================
+// SWIPE GESTURES FOR CHAPTER NAVIGATION
+// =============================================
+let touchstartX = 0;
+let touchstartY = 0;
+let touchendX = 0;
+let touchendY = 0;
+
+const handleSwipeGesture = () => {
+  const diffX = touchendX - touchstartX;
+  const diffY = touchendY - touchstartY;
+  
+  // Validate if we are in reading mode and no overlays are active
+  const isReading = currentBook && bookCap.textContent !== "";
+  const isMenuClosed = $overlay.classList.contains('hidden');
+  const isSearchClosed = !$searchOverlay.classList.contains('active');
+  
+  if (!isReading || !isMenuClosed || !isSearchClosed) return;
+
+  // Determine if it's a horizontal swipe (more horizontal than vertical, and at least 50px)
+  if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+    if (diffX < 0) { // Swiped left -> Next Chapter
+      if (currentChapter < currentBook.length - 1) {
+        currentChapter++;
+        bookCap.textContent = "Capitulo " + (currentChapter + 1);
+        watchChapter(currentChapter);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else { // Swiped right -> Previous Chapter
+      if (currentChapter > 0) {
+        currentChapter--;
+        bookCap.textContent = "Capitulo " + (currentChapter + 1);
+        watchChapter(currentChapter);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }
+};
+
+document.addEventListener('touchstart', e => {
+  touchstartX = e.changedTouches[0].screenX;
+  touchstartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  touchendX = e.changedTouches[0].screenX;
+  touchendY = e.changedTouches[0].screenY;
+  handleSwipeGesture();
+}, { passive: true });
