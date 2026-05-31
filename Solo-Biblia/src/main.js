@@ -141,8 +141,7 @@ const agregateBooks = () => {
 
 
 const watchChapter = (cap) => {
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  if (typeof updateSpeechIcon === 'function') updateSpeechIcon(false);
+  stopSpeech();
 
   $currentCap.querySelectorAll('span').forEach(span => {
     span.classList.remove('btn-primary');
@@ -276,8 +275,7 @@ const listenClickCaps = (event, element) => {
 
 
 const readBooks = async (book) => {
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  if (typeof updateSpeechIcon === 'function') updateSpeechIcon(false);
+  stopSpeech();
   currentBookKey = book;
   const bookForRead = await searchBook(book);
   currentBook = bookForRead;
@@ -706,6 +704,17 @@ const $iconStop = document.getElementById('iconStop');
 
 let speechUtterance = null;
 let isSpeaking = false;
+let verseBoundaries = [];
+
+const clearReadingHighlight = () => {
+  document.querySelectorAll('.verse-reading').forEach(el => el.classList.remove('verse-reading'));
+};
+
+const stopSpeech = () => {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  updateSpeechIcon(false);
+  clearReadingHighlight();
+};
 
 const updateSpeechIcon = (speaking) => {
   isSpeaking = speaking;
@@ -727,12 +736,11 @@ const toggleSpeech = () => {
   }
 
   if (isSpeaking || window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-    updateSpeechIcon(false);
+    stopSpeech();
     return;
   }
 
-  // Determine what to read
+  verseBoundaries = [];
   let textToRead = "";
   
   // 1. If user selected some text with the mouse
@@ -755,8 +763,20 @@ const toggleSpeech = () => {
       }
     }
     
-    // Join verses from start index to end
-    textToRead = chapterVerses.slice(startIndex).join(". ");
+    let currentIndex = 0;
+    for (let i = startIndex; i < chapterVerses.length; i++) {
+      const verseText = chapterVerses[i];
+      const part = verseText + ". ";
+      
+      verseBoundaries.push({
+        verseIndex: i + 1, // data-verse-index is 1-based
+        startChar: currentIndex,
+        endChar: currentIndex + part.length
+      });
+      
+      textToRead += part;
+      currentIndex += part.length;
+    }
   }
 
   if (!textToRead) {
@@ -771,13 +791,31 @@ const toggleSpeech = () => {
     speechUtterance = new SpeechSynthesisUtterance(textToRead);
     speechUtterance.lang = 'es-ES'; // Spanish
     
+    speechUtterance.onboundary = (e) => {
+      if (verseBoundaries.length > 0) {
+        const charIndex = e.charIndex;
+        const currentBoundary = verseBoundaries.find(b => charIndex >= b.startChar && charIndex < b.endChar);
+        
+        if (currentBoundary) {
+          clearReadingHighlight();
+          const activeVerse = document.querySelector(`p[data-verse-index="${currentBoundary.verseIndex}"]`);
+          if (activeVerse) {
+            activeVerse.classList.add('verse-reading');
+            // scroll softly into view
+            activeVerse.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      }
+    };
+
     speechUtterance.onend = () => {
       updateSpeechIcon(false);
+      clearReadingHighlight();
     };
     
     speechUtterance.onerror = (e) => {
       console.error("Speech synthesis error", e);
-      updateSpeechIcon(false);
+      stopSpeech();
     };
 
     window.speechSynthesis.speak(speechUtterance);
