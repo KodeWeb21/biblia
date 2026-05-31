@@ -163,7 +163,7 @@ const watchChapter = (cap) => {
 
   for (const verse of currentBook[cap]) {
     const p = document.createElement('P');
-    p.classList.add('text-lg', 'mb-4', 'leading-relaxed', 'font-reading');
+    p.classList.add('text-lg', 'md:text-xl', 'lg:text-2xl', 'mb-4', 'leading-relaxed', 'font-reading');
     p.innerHTML = `<span class="font-bold text-primary font-sans">${nVerse}.</span> ${verse}`;
     p.setAttribute('data-verse-index', nVerse);
     if (highlightedVerses.includes(nVerse)) {
