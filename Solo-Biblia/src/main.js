@@ -141,6 +141,9 @@ const agregateBooks = () => {
 
 
 const watchChapter = (cap) => {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (typeof updateSpeechIcon === 'function') updateSpeechIcon(false);
+
   $currentCap.querySelectorAll('span').forEach(span => {
     span.classList.remove('btn-primary');
     span.classList.add('btn-ghost');
@@ -273,6 +276,8 @@ const listenClickCaps = (event, element) => {
 
 
 const readBooks = async (book) => {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (typeof updateSpeechIcon === 'function') updateSpeechIcon(false);
   currentBookKey = book;
   const bookForRead = await searchBook(book);
   currentBook = bookForRead;
@@ -691,3 +696,95 @@ document.addEventListener('touchend', e => {
   touchendY = e.changedTouches[0].screenY;
   handleSwipeGesture();
 }, { passive: true });
+
+// =============================================
+// WEB SPEECH API FOR READING CHAPTERS
+// =============================================
+const $btnSpeech = document.getElementById('btnSpeech');
+const $iconPlay = document.getElementById('iconPlay');
+const $iconStop = document.getElementById('iconStop');
+
+let speechUtterance = null;
+let isSpeaking = false;
+
+const updateSpeechIcon = (speaking) => {
+  isSpeaking = speaking;
+  if ($iconPlay && $iconStop) {
+    if (speaking) {
+      $iconPlay.classList.add('hidden');
+      $iconStop.classList.remove('hidden');
+    } else {
+      $iconPlay.classList.remove('hidden');
+      $iconStop.classList.add('hidden');
+    }
+  }
+};
+
+const toggleSpeech = () => {
+  if (!window.speechSynthesis) {
+    alert("Tu navegador no soporta lectura en voz alta.");
+    return;
+  }
+
+  if (isSpeaking || window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    updateSpeechIcon(false);
+    return;
+  }
+
+  // Determine what to read
+  let textToRead = "";
+  
+  // 1. If user selected some text with the mouse
+  const selectedText = window.getSelection().toString().trim();
+  
+  if (selectedText) {
+    textToRead = selectedText;
+  } else if (currentBook && currentChapter !== undefined) {
+    // 2. Read from highlighted verse or entire chapter
+    const chapterVerses = currentBook[currentChapter];
+    let startIndex = 0;
+    
+    // Check if there are highlighted verses in the current chapter
+    const highlightedNodes = Array.from($capList.querySelectorAll('.verse-highlighted'));
+    if (highlightedNodes.length > 0) {
+      // Find the first highlighted verse
+      const firstHighlightedIndex = parseInt(highlightedNodes[0].getAttribute('data-verse-index')) - 1;
+      if (!isNaN(firstHighlightedIndex) && firstHighlightedIndex >= 0) {
+        startIndex = firstHighlightedIndex;
+      }
+    }
+    
+    // Join verses from start index to end
+    textToRead = chapterVerses.slice(startIndex).join(". ");
+  }
+
+  if (!textToRead) {
+    // Read the random verse on home
+    const $homeVerse = document.querySelector('.home .verse__text');
+    if ($homeVerse && $homeVerse.textContent) {
+      textToRead = $homeVerse.textContent;
+    }
+  }
+
+  if (textToRead) {
+    speechUtterance = new SpeechSynthesisUtterance(textToRead);
+    speechUtterance.lang = 'es-ES'; // Spanish
+    
+    speechUtterance.onend = () => {
+      updateSpeechIcon(false);
+    };
+    
+    speechUtterance.onerror = (e) => {
+      console.error("Speech synthesis error", e);
+      updateSpeechIcon(false);
+    };
+
+    window.speechSynthesis.speak(speechUtterance);
+    updateSpeechIcon(true);
+  }
+};
+
+if ($btnSpeech) {
+  $btnSpeech.addEventListener('click', toggleSpeech);
+}
