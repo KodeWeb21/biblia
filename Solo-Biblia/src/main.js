@@ -163,7 +163,7 @@ const watchChapter = (cap) => {
 
   for (const verse of currentBook[cap]) {
     const p = document.createElement('P');
-    p.classList.add('text-lg', 'md:text-xl', 'lg:text-2xl', 'mb-4', 'leading-relaxed', 'font-reading');
+    p.classList.add('text-lg', 'md:text-xl', 'lg:text-2xl', 'mb-4', 'leading-relaxed', 'font-reading', 'cursor-pointer');
     p.innerHTML = `<span class="font-bold text-primary font-sans">${nVerse}.</span> ${verse}`;
     p.setAttribute('data-verse-index', nVerse);
     if (highlightedVerses.includes(nVerse)) {
@@ -255,7 +255,7 @@ const showBookCaps = (book) => {
   const fragment = document.createDocumentFragment();
   for (let i = 0; i < totalCaps; i++) {
     const li = document.createElement('LI');
-    li.classList.add("btn", "btn-square", "p-[25px]");
+    li.classList.add("btn", "btn-square", "p-[25px]", "md:p-[35px]", "lg:p-[45px]", "lg:text-xl");
     li.setAttribute('data-key-cap', i);
     li.textContent = i + 1;
     fragment.appendChild(li);
