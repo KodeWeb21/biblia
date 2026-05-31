@@ -142,6 +142,7 @@ const agregateBooks = () => {
 
 const watchChapter = (cap) => {
   stopSpeech();
+  if ($btnSpeech) $btnSpeech.classList.remove('hidden');
 
   $currentCap.querySelectorAll('span').forEach(span => {
     span.classList.remove('btn-primary');
@@ -276,6 +277,7 @@ const listenClickCaps = (event, element) => {
 
 const readBooks = async (book) => {
   stopSpeech();
+  if ($btnSpeech) $btnSpeech.classList.add('hidden');
   currentBookKey = book;
   const bookForRead = await searchBook(book);
   currentBook = bookForRead;
@@ -312,6 +314,7 @@ if ($btnBackToCaps) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if ($btnReturnToReading) $btnReturnToReading.classList.remove('hidden');
+      if ($btnSpeech) $btnSpeech.classList.add('hidden');
     }
   });
 }
