@@ -603,6 +603,7 @@ $searchResults.addEventListener('click', async (e) => {
   const bookKey = item.dataset.bookKey;
   const bookName = item.dataset.bookName;
   const chapter = parseInt(item.dataset.chapter);
+  const verseIndex = parseInt(item.dataset.verseIndex);
 
   // Close overlay
   closeSearchOverlay();
@@ -617,8 +618,26 @@ $searchResults.addEventListener('click', async (e) => {
   // Now open the chapter
   currentChapter = chapter - 1;
   bookCap.textContent = "Capitulo " + chapter;
+  
+  // Highlight the selected verse
+  const storageKey = `highlight-${bookKey}-${currentChapter}`;
+  let highlightedVerses = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+  if (!highlightedVerses.includes(verseIndex)) {
+    highlightedVerses.push(verseIndex);
+    sessionStorage.setItem(storageKey, JSON.stringify(highlightedVerses));
+  }
+
   watchChapter(currentChapter);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Scroll to the verse
+  setTimeout(() => {
+    const activeVerse = document.querySelector(`p[data-verse-index="${verseIndex}"]`);
+    if (activeVerse) {
+      activeVerse.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, 50);
 });
 
 // Debounced input
