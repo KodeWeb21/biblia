@@ -168,12 +168,12 @@
                 </svg>
             </button>
         </div>
-        <div class="flex-1 flex justify-between items-center w-full px-2">
-            <div class="flex items-start flex-col">
-                <h1 class="title text-2xl font-bold text-primary">Biblia</h1>
-                <span id="bookCap"></span>
+        <div class="flex-1 flex justify-between items-center w-full px-2 min-w-0">
+            <div class="flex items-start flex-col min-w-0 flex-1 overflow-hidden pr-2">
+                <h1 class="title text-lg sm:text-xl md:text-2xl font-bold text-primary whitespace-nowrap text-ellipsis overflow-hidden w-full">Biblia</h1>
+                <span id="bookCap" class="text-xs sm:text-sm whitespace-nowrap text-ellipsis overflow-hidden w-full text-base-content/70"></span>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 flex-shrink-0">
                 <button id="btnReturnToReading" class="btn btn-ghost btn-circle text-primary hidden" title="Volver a la lectura">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
