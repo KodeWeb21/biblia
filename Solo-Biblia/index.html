@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Bible</title>
+    <title>Santa Biblia Reina Valera</title>
     <link rel="icon" type="image/svg+xml" href="/Logo%20biblia%20App.svg" />
     <link rel="stylesheet" href="src/style.css">
     <!-- <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" /> -->
@@ -66,9 +66,11 @@
             transform: translateY(100%);
             transition: transform 0.3s ease-in-out;
         }
+
         .search-overlay.active {
             transform: translateY(0);
         }
+
         .search-overlay__header {
             display: flex;
             align-items: center;
@@ -76,6 +78,7 @@
             padding: 0.75rem 1rem;
             border-bottom: 1px solid oklch(var(--b3));
         }
+
         .search-overlay__input {
             flex: 1;
             background: transparent;
@@ -84,9 +87,11 @@
             font-size: 1.1rem;
             color: oklch(var(--bc));
         }
+
         .search-overlay__input::placeholder {
             color: oklch(var(--bc) / 0.4);
         }
+
         .search-tabs {
             display: flex;
             gap: 0.5rem;
@@ -95,7 +100,11 @@
             border-bottom: 1px solid oklch(var(--b3));
             flex-shrink: 0;
         }
-        .search-tabs::-webkit-scrollbar { height: 0; }
+
+        .search-tabs::-webkit-scrollbar {
+            height: 0;
+        }
+
         .search-tab {
             white-space: nowrap;
             padding: 0.35rem 0.75rem;
@@ -108,36 +117,43 @@
             color: oklch(var(--bc));
             transition: all 0.15s;
         }
+
         .search-tab.active {
             background: oklch(var(--p));
             color: oklch(var(--pc));
             border-color: oklch(var(--p));
         }
+
         .search-results {
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
         }
+
         .search-result-item {
             padding: 0.75rem 0;
             border-bottom: 1px solid oklch(var(--b2));
             cursor: pointer;
             transition: background 0.15s;
         }
+
         .search-result-item:hover {
             background: oklch(var(--b2));
         }
+
         .search-result-ref {
             font-size: 0.8rem;
             font-weight: 600;
             color: oklch(var(--bc) / 0.55);
             margin-bottom: 0.25rem;
         }
+
         .search-result-text {
             font-size: 0.95rem;
             line-height: 1.6;
             color: oklch(var(--bc));
         }
+
         .search-result-text mark {
             background: rgba(250, 204, 21, 0.45);
             color: inherit;
@@ -145,11 +161,13 @@
             border-radius: 2px;
             padding: 0 2px;
         }
+
         .search-empty {
             text-align: center;
             padding: 3rem 1rem;
             color: oklch(var(--bc) / 0.4);
         }
+
         .search-loading {
             text-align: center;
             padding: 3rem 1rem;
@@ -170,11 +188,15 @@
         </div>
         <div class="flex-1 flex justify-between items-center w-full px-2 min-w-0">
             <div class="flex items-start flex-col min-w-0 flex-1 overflow-hidden pr-2">
-                <h1 class="title text-lg sm:text-xl md:text-2xl font-bold text-primary whitespace-nowrap text-ellipsis overflow-hidden w-full">Biblia</h1>
-                <span id="bookCap" class="text-xs sm:text-sm whitespace-nowrap text-ellipsis overflow-hidden w-full text-base-content/70"></span>
+                <h1
+                    class="title text-lg sm:text-xl md:text-2xl font-bold text-primary whitespace-nowrap text-ellipsis overflow-hidden w-full">
+                    Biblia</h1>
+                <span id="bookCap"
+                    class="text-xs sm:text-sm whitespace-nowrap text-ellipsis overflow-hidden w-full text-base-content/70"></span>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0">
-                <button id="btnReturnToReading" class="btn btn-ghost btn-circle text-primary hidden" title="Volver a la lectura">
+                <button id="btnReturnToReading" class="btn btn-ghost btn-circle text-primary hidden"
+                    title="Volver a la lectura">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="lucide lucide-undo-2">
@@ -182,7 +204,8 @@
                         <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
                     </svg>
                 </button>
-                <button id="btnBackToCaps" class="btn btn-ghost btn-circle text-primary hidden" title="Volver a capítulos">
+                <button id="btnBackToCaps" class="btn btn-ghost btn-circle text-primary hidden"
+                    title="Volver a capítulos">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="lucide lucide-book-open">
@@ -191,14 +214,16 @@
                     </svg>
                 </button>
                 <button id="btnSpeech" class="btn btn-ghost btn-circle text-primary" title="Leer en voz alta">
-                    <svg id="iconPlay" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-2">
+                    <svg id="iconPlay" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-volume-2">
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                         <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                         <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
                     </svg>
-                    <svg id="iconStop" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square hidden">
+                    <svg id="iconStop" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="lucide lucide-square hidden">
                         <rect width="18" height="18" x="3" y="3" rx="2" />
                     </svg>
                 </button>
@@ -260,7 +285,8 @@
                     <path d="m15 18-6-6 6-6" />
                 </svg>
             </button>
-            <input type="text" id="globalSearchInput" class="search-overlay__input" placeholder="Buscar en la Biblia..." autocomplete="off">
+            <input type="text" id="globalSearchInput" class="search-overlay__input" placeholder="Buscar en la Biblia..."
+                autocomplete="off">
             <button id="btnClearSearch" class="btn btn-ghost btn-circle btn-sm hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
